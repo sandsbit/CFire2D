@@ -8,5 +8,6 @@ include_directories(${Boost_INCLUDE_DIR})
 
 find_package(OpenAL REQUIRED)
 
-add_library(CFire2DAudio SHARED CFire2D/audio/library.cpp)
+add_library(CFire2DAudio SHARED CFire2D/audio/openal/openal.cpp CFire2D/audio/openal/openal.h
+        CFire2D/audio/audio_abstracts.h)
 target_link_libraries(CFire2DAudio LINK_PUBLIC ${Boost_LIBRARIES} ${OPENAL_LIBRARY})
