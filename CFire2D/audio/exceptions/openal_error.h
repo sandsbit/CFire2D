@@ -24,7 +24,7 @@
 namespace c2d::exceptions {
 
  class openal_error : public boost::exception, public std::exception {
-  const char *what() const noexcept override;
+  [[nodiscard]] const char *what() const noexcept override;
  };
 
 }

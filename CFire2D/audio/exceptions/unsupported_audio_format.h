@@ -24,7 +24,7 @@
 namespace c2d::exceptions {
 
 class unsupported_audio_format : public boost::exception, public std::exception {
- const char *what() const noexcept override;
+ [[nodiscard]] const char *what() const noexcept override;
 };
 
 }
