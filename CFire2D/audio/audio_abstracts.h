@@ -18,4 +18,32 @@
 #ifndef AUDIO_ABSTRACTS_H
 #define AUDIO_ABSTRACTS_H
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "utils/2dutils.h"
+#include "audio_objects.h"
+
+namespace c2d::audio {
+ class AudioSystem {
+ public:
+  AudioSystem();
+  virtual ~AudioSystem();
+
+  virtual std::vector<std::string> listDevices();
+  virtual void setDevice(std::string device) noexcept(false);
+
+  virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false);
+  virtual int playMusic(std::unique_ptr<Music> music) noexcept(false);
+  virtual void stop(int id) noexcept(false);
+
+  virtual void setListenerPosition(double x, double y) noexcept(false);
+  void setListenerPosition(Point point) noexcept(false) {
+   setListenerPosition(point.x, point.y);
+  }
+ };
+}
+
+
 #endif //AUDIO_ABSTRACTS_H
