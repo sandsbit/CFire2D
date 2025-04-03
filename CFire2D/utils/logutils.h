@@ -18,12 +18,14 @@
 #ifndef LOGUTILS_H
 #define LOGUTILS_H
 
-enum LoggingSeverity {
- FATAL = 4,
- ERROR = 3,
- WARNING = 2,
- INFO = 1,
- DEBUG = 0
-};
+namespace c2d {
+    enum LoggingSeverity {
+        FATAL = 4,
+        ERROR = 3,
+        WARNING = 2,
+        INFO = 1,
+        DEBUG = 0
+    };
+}
 
 #endif //LOGUTILS_H
