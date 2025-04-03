@@ -18,6 +18,23 @@
 #ifndef CFIRE2D_LIBRARY_H
 #define CFIRE2D_LIBRARY_H
 
-void hello();
+#include "audio/audio_abstracts.h"
+
+namespace c2d::audio {
+    class OpenALAudioSystem : public AudioSystem {
+        public:
+        OpenALAudioSystem();
+        ~OpenALAudioSystem() override;
+
+        std::vector<std::string> listDevices() override;
+        void setDevice(std::string device) noexcept(false) override;
+
+        int playSound(std::unique_ptr<Sound> sound) noexcept(false) override;
+        int playMusic(std::unique_ptr<Music> music) noexcept(false) override;
+
+        void stop(int id) noexcept(false) override;
+        void setListenerPosition(double x, double y) noexcept(false) override;
+    };
+}
 
 #endif //CFIRE2D_LIBRARY_H

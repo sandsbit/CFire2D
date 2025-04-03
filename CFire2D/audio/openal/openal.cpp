@@ -15,10 +15,4 @@
  * Public License along with CFire 2D. If not, see https://www.gnu.org/licenses/.
  */
 
-#include "../library.h"
-
-#include <iostream>
-
-void hello() {
-    std::cout << "Hello, World!" << std::endl;
-}
+#include "openal.h"
