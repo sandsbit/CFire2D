@@ -18,12 +18,15 @@
 #ifndef CFIRE2D_LIBRARY_H
 #define CFIRE2D_LIBRARY_H
 
+#include <boost/log/sources/severity_logger.hpp>
+
 #include "audio/audio_abstracts.h"
+#include "utils/logutils.h"
 
 namespace c2d::audio {
     class OpenALAudioSystem : public AudioSystem {
         public:
-        OpenALAudioSystem();
+        OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger);
         ~OpenALAudioSystem() override;
 
         std::vector<std::string> listDevices() override;
