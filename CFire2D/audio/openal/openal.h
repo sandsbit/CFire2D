@@ -20,6 +20,7 @@
 
 #include <optional>
 #include <boost/log/sources/severity_logger.hpp>
+#include <alc.h>
 
 #include "audio/audio_abstracts.h"
 #include "audio/exceptions/openal_error.h"
@@ -46,8 +47,10 @@ namespace c2d::audio {
 
         boost::log::sources::severity_logger<LoggingSeverity> logger;
 
+        std::optional<exceptions::openal_error> logMessageAndCreateError(std::string message);
+
         std::optional<exceptions::openal_error> checkAlErrors();
-        std::optional<exceptions::openal_error> checkAlcErrors();
+        std::optional<exceptions::openal_error> checkAlcErrors(ALCdevice *device);
     };
 }
 

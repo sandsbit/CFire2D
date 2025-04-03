@@ -29,7 +29,14 @@ namespace c2d::audio {
         this->logger = logger;
     }
 
-    inline const char * getErrorDescription(ALenum error) {
+    std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {
+        BOOST_LOG_SEV(this->logger, ERROR) << message;
+        exceptions::openal_error openalError{};
+        openalError << boost::error_info<struct tag_errmsg, std::string>{message};
+        return std::make_optional(openalError);
+    }
+
+    inline const char * getAlErrorDescription(ALenum error) {
         switch (error) {
             case AL_INVALID_NAME:
                 return "a bad name (ID) was passed to an OpenAL function";
@@ -50,10 +57,31 @@ namespace c2d::audio {
         ALenum error = alGetError();
         if (error == AL_NO_ERROR)
             return std::nullopt;
-        std::string message = getErrorDescription(error);
-        BOOST_LOG_SEV(this->logger, ERROR) << message;
-        exceptions::openal_error openalError{};
-        openalError << boost::error_info<struct tag_errmsg, std::string>{message};
-        return std::make_optional(openalError);
+        return logMessageAndCreateError(getAlErrorDescription(error));
     }
+
+    inline const char * getAlcErrorDescription(ALCenum error) {
+        switch (error) {
+            case ALC_INVALID_DEVICE:
+                return "a bad device was passed to an OpenAL function";
+            case ALC_INVALID_CONTEXT:
+                return "a bad context was passed to an OpenAL function";
+            case ALC_INVALID_ENUM:
+                return "an unknown enum value was passed to an OpenAL function";
+            case ALC_INVALID_VALUE:
+                return "an invalid value was passed to an OpenAL function";
+            case ALC_OUT_OF_MEMORY:
+                return "the requested operation resulted in OpenAL running out of memory";
+            default:
+                return "unknown OpenAL ALC error";
+        }
+    }
+
+    std::optional<exceptions::openal_error> OpenALAudioSystem::checkAlcErrors(ALCdevice *device) {
+        ALenum error = alcGetError(device);
+        if (error == ALC_NO_ERROR)
+            return std::nullopt;
+        return logMessageAndCreateError(getAlcErrorDescription(error));
+    }
+
 }
