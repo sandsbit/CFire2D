@@ -15,4 +15,45 @@
  * Public License along with CFire 2D. If not, see https://www.gnu.org/licenses/.
  */
 
+#include <optional>
+#include <al.h>
+#include <alc.h>
+#include <boost/log/common.hpp>
+#include <boost/exception/all.hpp>
+
 #include "openal.h"
+
+namespace c2d::audio {
+
+    OpenALAudioSystem::OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger) : AudioSystem(logger) {
+        this->logger = logger;
+    }
+
+    inline const char * getErrorDescription(ALenum error) {
+        switch (error) {
+            case AL_INVALID_NAME:
+                return "a bad name (ID) was passed to an OpenAL function";
+            case AL_INVALID_ENUM:
+                return "an invalid enum value was passed to an OpenAL function";
+            case AL_INVALID_VALUE:
+                return "an invalid value was passed to an OpenAL function";
+            case AL_INVALID_OPERATION:
+                return "the requested operation is not valid";
+            case AL_OUT_OF_MEMORY:
+                return "the requested operation resulted in OpenAL running out of memory";
+            default:
+                return "unknown OpenAL error";
+        }
+    }
+
+    std::optional<exceptions::openal_error> OpenALAudioSystem::checkAlErrors() {
+        ALenum error = alGetError();
+        if (error == AL_NO_ERROR)
+            return std::nullopt;
+        std::string message = getErrorDescription(error);
+        BOOST_LOG_SEV(this->logger, ERROR) << message;
+        exceptions::openal_error openalError{};
+        openalError << boost::error_info<struct tag_errmsg, std::string>{message};
+        return std::make_optional(openalError);
+    }
+}

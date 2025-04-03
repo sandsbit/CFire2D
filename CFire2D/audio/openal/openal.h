@@ -18,14 +18,18 @@
 #ifndef CFIRE2D_LIBRARY_H
 #define CFIRE2D_LIBRARY_H
 
+#include <optional>
 #include <boost/log/sources/severity_logger.hpp>
 
 #include "audio/audio_abstracts.h"
+#include "audio/exceptions/openal_error.h"
 #include "utils/logutils.h"
 
 namespace c2d::audio {
     class OpenALAudioSystem : public AudioSystem {
-        public:
+
+    public:
+
         OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger);
         ~OpenALAudioSystem() override;
 
@@ -37,6 +41,13 @@ namespace c2d::audio {
 
         void stop(int id) noexcept(false) override;
         void setListenerPosition(double x, double y) noexcept(false) override;
+
+    private:
+
+        boost::log::sources::severity_logger<LoggingSeverity> logger;
+
+        std::optional<exceptions::openal_error> checkAlErrors();
+        std::optional<exceptions::openal_error> checkAlcErrors();
     };
 }
 
