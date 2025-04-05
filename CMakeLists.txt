@@ -14,5 +14,10 @@ add_library(CFire2DAudio SHARED CFire2D/audio/openal/openal.cpp CFire2D/audio/op
         CFire2D/audio/exceptions/unsupported_audio_format.cpp
         CFire2D/audio/exceptions/unsupported_audio_format.h
         CFire2D/audio/exceptions/openal_error.cpp
-        CFire2D/audio/exceptions/openal_error.h)
+        CFire2D/audio/exceptions/openal_error.h
+        CFire2D/audio/openal/loaders/wave.cpp
+        CFire2D/audio/openal/loaders/wave.h
+        CFire2D/audio/openal/loaders/audiofile.h
+        CFire2D/audio/exceptions/invalid_audio_file_format.cpp
+        CFire2D/audio/exceptions/invalid_audio_file_format.h)
 target_link_libraries(CFire2DAudio LINK_PUBLIC ${Boost_LIBRARIES} ${OPENAL_LIBRARY})
