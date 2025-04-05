@@ -31,6 +31,16 @@ namespace c2d::audio {
         this->checkAlcErrors(this->device);
     }
 
+    OpenALAudioSystem::~OpenALAudioSystem() {
+        alcCloseDevice(this->device);
+        try {
+            checkAlcErrors(this->device);
+        } catch (std::exception &e) {
+            BOOST_LOG_SEV(this->logger, FATAL) << "Exception while closing OpenAL device: " << e;
+            exit(1);
+        }
+    }
+
     std::vector<std::string> OpenALAudioSystem::listDevices() {
         const ALCchar *devices = alcGetString(this->device, ALC_DEVICE_SPECIFIER);
         checkAlcErrors(this->device);
@@ -46,6 +56,9 @@ namespace c2d::audio {
     }
 
     void OpenALAudioSystem::setDevice(const std::string &device) noexcept(false) {
+        alcCloseDevice(this->device);
+        checkAlcErrors(this->device);
+
         if (device != "")
             this->device = alcOpenDevice(device.c_str());
         else
