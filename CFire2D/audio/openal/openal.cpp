@@ -27,6 +27,8 @@ namespace c2d::audio {
 
     OpenALAudioSystem::OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger) : AudioSystem(logger) {
         this->logger = logger;
+        this->device = alcOpenDevice(nullptr);
+        this->checkAlcErrors(this->device);
     }
 
     std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {
