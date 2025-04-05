@@ -117,7 +117,6 @@ static void processWaveLoadException(const std::string &message, boost::log::sou
 // ReSharper disable once CppNotAllPathsReturnValue
 c2d::audio::AudioFile c2d::audio::loadWav(std::filesystem::path file, boost::log::sources::severity_logger<LoggingSeverity> &logger) {
     std::ifstream fileStream(file, std::ios::binary);
-    std::string errorMessage;
     if (!fileStream.is_open())
         processWaveLoadException("Could not open file " + file.string(), logger);
     auto audioFileOrErrorMsg = loadWavFileHeader(fileStream);
