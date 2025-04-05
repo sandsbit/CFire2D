@@ -31,6 +31,28 @@ namespace c2d::audio {
         this->checkAlcErrors(this->device);
     }
 
+    std::vector<std::string> OpenALAudioSystem::listDevices() {
+        const ALCchar *devices = alcGetString(this->device, ALC_DEVICE_SPECIFIER);
+        checkAlcErrors(this->device);
+
+        std::vector<std::string> devicesVector;
+        const char *ptr = devices;
+        do {
+            devicesVector.push_back(std::string(ptr));
+            ptr += devicesVector.back().size() + 1;
+        } while (*(ptr + 1) != '\0');
+
+        return devicesVector;
+    }
+
+    void OpenALAudioSystem::setDevice(const std::string &device) noexcept(false) {
+        if (device != "")
+            this->device = alcOpenDevice(device.c_str());
+        else
+            this->device = alcOpenDevice(nullptr);
+        checkAlcErrors(this->device);
+    }
+
     std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {
         BOOST_LOG_SEV(this->logger, ERROR) << message;
         exceptions::openal_error openalError{};

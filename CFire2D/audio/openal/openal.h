@@ -35,7 +35,7 @@ namespace c2d::audio {
         ~OpenALAudioSystem() override;
 
         std::vector<std::string> listDevices() override;
-        void setDevice(std::string device) noexcept(false) override;
+        void setDevice(const std::string &device) noexcept(false) override;
 
         int playSound(std::unique_ptr<Sound> sound) noexcept(false) override;
         int playMusic(std::unique_ptr<Music> music) noexcept(false) override;
