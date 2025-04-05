@@ -48,6 +48,7 @@ namespace c2d::audio {
         boost::log::sources::severity_logger<LoggingSeverity> logger;
 
         ALCdevice *device;
+        ALCcontext *context;
 
         std::optional<exceptions::openal_error> logMessageAndCreateError(std::string message);
 

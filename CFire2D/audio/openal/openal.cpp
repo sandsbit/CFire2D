@@ -28,11 +28,24 @@ namespace c2d::audio {
     OpenALAudioSystem::OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger) : AudioSystem(logger) {
         this->logger = logger;
         this->device = alcOpenDevice(nullptr);
+        if (this->device == nullptr)
+            logMessageAndCreateError("Could not crete ALC device");
+        this->checkAlcErrors(this->device);
+
+        this->context = alcCreateContext(this->device, nullptr);
+        this->checkAlcErrors(this->device);
+        if (this->context == nullptr)
+            logMessageAndCreateError("Could not crete ALC context");
+
+        if (!alcMakeContextCurrent(this->context))
+            logMessageAndCreateError("Could not make ALC context current");
         this->checkAlcErrors(this->device);
     }
 
     OpenALAudioSystem::~OpenALAudioSystem() {
         alcCloseDevice(this->device);
+        alcMakeContextCurrent(nullptr);
+        alcDestroyContext(this->context);
         try {
             checkAlcErrors(this->device);
         } catch (std::exception &e) {
