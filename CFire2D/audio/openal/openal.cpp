@@ -70,6 +70,8 @@ namespace c2d::audio {
 
     void OpenALAudioSystem::setDevice(const std::string &device) noexcept(false) {
         alcCloseDevice(this->device);
+        if (this->device == nullptr)
+            logMessageAndCreateError("Could not crete ALC device");
         checkAlcErrors(this->device);
 
         if (device != "")
