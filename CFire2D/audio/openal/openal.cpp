@@ -17,6 +17,7 @@
 
 #include <optional>
 #include <string>
+#include <thread>
 #include <al.h>
 #include <alc.h>
 #include <boost/log/common.hpp>
@@ -41,9 +42,15 @@ namespace c2d::audio {
         if (!alcMakeContextCurrent(this->context))
             logMessageAndCreateError("Could not make ALC context current");
         this->checkAlcErrors(this->device);
+
+        std::thread clearingThread([this]() {
+           this->cleanOpenALBuffersAndSourcesLoopIgnoreExceptions();
+        });
     }
 
     OpenALAudioSystem::~OpenALAudioSystem() {
+        quit = true;
+
         alcCloseDevice(this->device);
         alcMakeContextCurrent(nullptr);
         alcDestroyContext(this->context);
@@ -53,6 +60,8 @@ namespace c2d::audio {
             BOOST_LOG_SEV(this->logger, FATAL) << "Exception while closing OpenAL device: " << e;
             exit(1);
         }
+
+        clearingThread.join();
     }
 
     std::vector<std::string> OpenALAudioSystem::listDevices() {
@@ -118,7 +127,9 @@ namespace c2d::audio {
         checkAlErrors();
         alSourcei(source, AL_BUFFER, buffer);
 
+        buffersAndSourcesMutex.lock();
         buffersAndSources.push_back({buffer, source});
+        buffersAndSourcesMutex.unlock();
 
         alSourcePlay(source);
         checkAlErrors();
@@ -181,4 +192,25 @@ namespace c2d::audio {
         return logMessageAndCreateError(getAlcErrorDescription(error));
     }
 
+    void OpenALAudioSystem::cleanOpenALBuffersAndSourcesLoopIgnoreExceptions() {
+        while (true) {
+            if (quit)
+                break;
+            buffersAndSourcesMutex.lock();
+            try {
+                for (std::size_t i = 0; i < buffersAndSources.size(); ++i) {
+                    auto bufferAndSource = buffersAndSources[i];
+                    ALint state;
+                    alGetSourcei(bufferAndSource.source, AL_SOURCE_STATE, &state);
+                    if (state != AL_PLAYING and state != AL_PAUSED) {
+                        alDeleteBuffers(1, &bufferAndSource.buffer);
+                        alDeleteSources(1, &bufferAndSource.source);
+                        checkAlErrors();
+                    }
+                }
+            } catch (std::exception _) {}
+            buffersAndSourcesMutex.unlock();
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    }
 }
