@@ -23,7 +23,7 @@
 
 #include "utils/2dutils.h"
 #include "utils/logutils.h"
-#include "openal/loaders/audiofile.h"
+#include "loaders/audiofile.h"
 
 namespace c2d::audio {
 

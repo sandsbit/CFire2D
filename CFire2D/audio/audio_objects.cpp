@@ -18,7 +18,7 @@
 #include "audio_objects.h"
 
 #include "exceptions/unsupported_audio_format.h"
-#include "openal/loaders/wave.h"
+#include "loaders/wave.h"
 
 c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, boost::log::sources::severity_logger<LoggingSeverity> &logger) noexcept(false) {
     switch (type) {
