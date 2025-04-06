@@ -34,7 +34,7 @@ namespace c2d::audio {
   virtual ~AudioSystem();
 
   virtual std::vector<std::string> listDevices();
-  virtual void setDevice(std::string device) noexcept(false);
+  virtual void setDevice(const std::string &device) noexcept(false);
 
   virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false);
   virtual int playMusic(std::unique_ptr<Music> music) noexcept(false);

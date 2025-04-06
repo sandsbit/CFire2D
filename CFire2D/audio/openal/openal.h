@@ -31,7 +31,7 @@ namespace c2d::audio {
 
     public:
 
-        OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger);
+        explicit OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger);
         ~OpenALAudioSystem() override;
 
         std::vector<std::string> listDevices() override;
