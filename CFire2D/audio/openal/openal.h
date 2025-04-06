@@ -50,6 +50,12 @@ namespace c2d::audio {
         ALCdevice *device;
         ALCcontext *context;
 
+        struct BufferAndSource {
+            ALuint buffer;
+            ALuint source;
+        };
+        std::vector<BufferAndSource> buffersAndSources;
+
         std::optional<exceptions::openal_error> logMessageAndCreateError(std::string message);
 
         std::optional<exceptions::openal_error> checkAlErrors();

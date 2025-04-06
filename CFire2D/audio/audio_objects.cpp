@@ -41,6 +41,18 @@ void c2d::audio::Sound::setPosition(Point point) {
     this->position = point;
 }
 
+c2d::Point c2d::audio::Sound::getPosition() const {
+    return position;
+}
+
+double c2d::audio::Sound::getPositionX() const {
+    return position.x;
+}
+
+double c2d::audio::Sound::getPositionY() const {
+    return position.y;
+}
+
 const c2d::audio::AudioFile c2d::audio::Sound::getAudioFile() const noexcept {
     return this->audioFile;
 }

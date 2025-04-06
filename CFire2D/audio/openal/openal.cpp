@@ -16,6 +16,7 @@
  */
 
 #include <optional>
+#include <string>
 #include <al.h>
 #include <alc.h>
 #include <boost/log/common.hpp>
@@ -79,6 +80,50 @@ namespace c2d::audio {
         else
             this->device = alcOpenDevice(nullptr);
         checkAlcErrors(this->device);
+    }
+
+    int OpenALAudioSystem::playSound(std::unique_ptr<Sound> sound) noexcept(false) {
+        ALuint buffer;
+        alGenBuffers(1, &buffer);
+        checkAlErrors();
+
+        ALenum format;
+        AudioFile audioFile = sound->getAudioFile();
+        if (audioFile.channels == 1 && audioFile.bitsPerSample == 8)
+            format = AL_FORMAT_MONO8;
+        else if (audioFile.channels == 1 && audioFile.bitsPerSample == 16)
+            format = AL_FORMAT_MONO16;
+        else if (audioFile.channels == 2 && audioFile.bitsPerSample == 8)
+            format = AL_FORMAT_STEREO8;
+        else if (audioFile.channels == 2 && audioFile.bitsPerSample == 16)
+            format = AL_FORMAT_STEREO16;
+        else
+            logMessageAndCreateError("Invalid WAVE file parameters: channels: " + std::to_string(audioFile.channels)
+                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+
+        alBufferData(buffer, format, audioFile.data, audioFile.size, audioFile.sampleRate);
+
+        ALuint source;
+        alGenSources(1, &source);
+        checkAlErrors();
+        alSourcef(source, AL_PITCH, 1);
+        checkAlErrors();
+        alSourcef(source, AL_GAIN, 1.0f);
+        checkAlErrors();
+        alSource3f(source, AL_POSITION, sound->getPositionX(), sound->getPositionY(), 0);
+        checkAlErrors();
+        alSource3f(source, AL_VELOCITY, 0, 0, 0);
+        checkAlErrors();
+        alSourcei(source, AL_LOOPING, AL_FALSE);
+        checkAlErrors();
+        alSourcei(source, AL_BUFFER, buffer);
+
+        buffersAndSources.push_back({buffer, source});
+
+        alSourcePlay(source);
+        checkAlErrors();
+
+        return source;
     }
 
     std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {

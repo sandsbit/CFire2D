@@ -41,6 +41,10 @@ namespace c2d::audio {
   void setPosition(double x, double y);
   void setPosition(Point point);
 
+  [[nodiscard]] Point getPosition() const;
+  [[nodiscard]] double getPositionX() const;
+  [[nodiscard]] double getPositionY() const;
+
   [[nodiscard]] const AudioFile getAudioFile() const noexcept;
 
  private:
