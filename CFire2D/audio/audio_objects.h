@@ -19,8 +19,11 @@
 #define AUDIO_OBJECTS_H
 
 #include <filesystem>
+#include <boost/log/sources/severity_logger.hpp>
 
 #include "utils/2dutils.h"
+#include "utils/logutils.h"
+#include "openal/loaders/audiofile.h"
 
 namespace c2d::audio {
 
@@ -33,13 +36,16 @@ namespace c2d::audio {
 
  class Sound {
   public:
-  Sound(std::filesystem::path audioFIle, AudioFileType type) noexcept(false);
+  Sound(std::filesystem::path audioFIle, AudioFileType type, boost::log::sources::severity_logger<LoggingSeverity> &logger) noexcept(false);
 
   void setPosition(double x, double y);
   void setPosition(Point point);
 
+  [[nodiscard]] const AudioFile getAudioFile() const noexcept;
+
  private:
-  Point position;
+  Point position{};
+  AudioFile audioFile;
  };
 
  class Music {

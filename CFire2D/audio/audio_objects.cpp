@@ -16,3 +16,31 @@
  */
 
 #include "audio_objects.h"
+
+#include "exceptions/unsupported_audio_format.h"
+#include "openal/loaders/wave.h"
+
+c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, boost::log::sources::severity_logger<LoggingSeverity> &logger) noexcept(false) {
+    switch (type) {
+        case WAVE:
+            this->audioFile = loadWav(audioFIle, logger);
+            break;
+        default:
+            throw exceptions::unsupported_audio_format{};
+    }
+    this->position.x = 0;
+    this->position.y = 0;
+}
+
+void c2d::audio::Sound::setPosition(double x, double y) {
+    this->position.x = x;
+    this->position.y = y;
+}
+
+void c2d::audio::Sound::setPosition(Point point) {
+    this->position = point;
+}
+
+const c2d::audio::AudioFile c2d::audio::Sound::getAudioFile() const noexcept {
+    return this->audioFile;
+}
