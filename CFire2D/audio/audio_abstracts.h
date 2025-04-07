@@ -30,17 +30,16 @@
 namespace c2d::audio {
  class AudioSystem {
  public:
-  AudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger);
-  virtual ~AudioSystem();
+  virtual ~AudioSystem() = default;
 
-  virtual std::vector<std::string> listDevices();
-  virtual void setDevice(const std::string &device) noexcept(false);
+  virtual std::vector<std::string> listDevices() = 0;
+  virtual void setDevice(const std::string &device) noexcept(false) = 0;
 
-  virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false);
-  virtual int playMusic(std::unique_ptr<Music> music) noexcept(false);
-  virtual void stop(int id) noexcept(false);
+  virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false) = 0;
+  virtual int playMusic(std::unique_ptr<Music> music) noexcept(false) = 0;
+  virtual void stop(int id) noexcept(false) = 0;
 
-  virtual void setListenerPosition(double x, double y) noexcept(false);
+  virtual void setListenerPosition(double x, double y) noexcept(false) = 0;
   void setListenerPosition(Point point) noexcept(false) {
    setListenerPosition(point.x, point.y);
   }

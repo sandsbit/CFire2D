@@ -27,7 +27,7 @@
 
 namespace c2d::audio {
 
-    OpenALAudioSystem::OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger) : AudioSystem(logger) {
+    OpenALAudioSystem::OpenALAudioSystem(const boost::log::sources::severity_logger<LoggingSeverity> &logger) {
         this->logger = logger;
         this->device = alcOpenDevice(nullptr);
         if (this->device == nullptr)
@@ -57,7 +57,7 @@ namespace c2d::audio {
         try {
             checkAlcErrors(this->device);
         } catch (std::exception &e) {
-            BOOST_LOG_SEV(this->logger, FATAL) << "Exception while closing OpenAL device: " << e;
+            BOOST_LOG_SEV(this->logger, FATAL) << "Exception while closing OpenAL device: " << e.what();
             exit(1);
         }
 
@@ -135,6 +135,15 @@ namespace c2d::audio {
         checkAlErrors();
 
         return source;
+    }
+
+    int OpenALAudioSystem::playMusic(std::unique_ptr<Music> music) noexcept(false) {
+    }
+
+    void OpenALAudioSystem::stop(int id) noexcept(false) {
+    }
+
+    void OpenALAudioSystem::setListenerPosition(double x, double y) noexcept(false) {
     }
 
     std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {

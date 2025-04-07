@@ -18,7 +18,7 @@
 #include "invalid_audio_file_format.h"
 
 namespace c2d::exceptions {
- const char * openal_error::what() const noexcept {
+ const char * invalid_audio_file_format::what() const noexcept {
   return "audio file format is invalid";
  }
 }

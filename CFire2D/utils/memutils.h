@@ -24,12 +24,12 @@
 namespace c2d::memutils {
 
     // https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/
-    std::int32_t convertMemoryToInt(char *buffer, std::size_t length) {
+    inline std::int32_t convertMemoryToInt(char *buffer, std::size_t length) {
         std::int32_t a = 0;
         if(std::endian::native == std::endian::little)
-            std::memcpy(&a, buffer, len);
+            std::memcpy(&a, buffer, length);
         else
-            for(std::size_t i = 0; i < len; ++i)
+            for(std::size_t i = 0; i < length; ++i)
                 reinterpret_cast<char*>(&a)[3 - i] = buffer[i];
         return a;
     }
