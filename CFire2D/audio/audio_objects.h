@@ -36,7 +36,7 @@ namespace c2d::audio {
 
  class Sound {
   public:
-  Sound(std::filesystem::path audioFIle, AudioFileType type, boost::log::sources::severity_logger<LoggingSeverity> &logger) noexcept(false);
+  Sound(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false);
 
   void setPosition(double x, double y);
   void setPosition(Point point);

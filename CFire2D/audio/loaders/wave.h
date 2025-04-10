@@ -25,7 +25,7 @@
 #include "utils/logutils.h"
 
 namespace c2d::audio {
-    AudioFile loadWav(std::filesystem::path file, boost::log::sources::severity_logger<c2d::LoggingSeverity> &logger);
+    AudioFile loadWav(std::filesystem::path file, logger_t &logger);
 }
 
 #endif //WAVE_H

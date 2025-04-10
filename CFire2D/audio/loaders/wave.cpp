@@ -106,7 +106,7 @@ static std::variant<std::string, c2d::audio::AudioFile> loadWavFileHeader(std::i
     return audioFile;
 }
 
-static void processWaveLoadException(const std::string &message, boost::log::sources::severity_logger<c2d::LoggingSeverity> &logger) {
+static void processWaveLoadException(const std::string &message, c2d::logger_t &logger) {
     c2d::exceptions::invalid_audio_file_format exc{};
     BOOST_LOG_SEV(logger, c2d::ERROR) << message;
     exc << boost::error_info<struct tag_errmsg, std::string>{message};
@@ -115,7 +115,7 @@ static void processWaveLoadException(const std::string &message, boost::log::sou
 
 // https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/
 // ReSharper disable once CppNotAllPathsReturnValue
-c2d::audio::AudioFile c2d::audio::loadWav(std::filesystem::path file, boost::log::sources::severity_logger<LoggingSeverity> &logger) {
+c2d::audio::AudioFile c2d::audio::loadWav(std::filesystem::path file, logger_t &logger) {
     std::ifstream fileStream(file, std::ios::binary);
     if (!fileStream.is_open())
         processWaveLoadException("Could not open file " + file.string(), logger);

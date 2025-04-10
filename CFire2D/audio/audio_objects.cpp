@@ -20,7 +20,7 @@
 #include "exceptions/unsupported_audio_format.h"
 #include "loaders/wave.h"
 
-c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, boost::log::sources::severity_logger<LoggingSeverity> &logger) noexcept(false) {
+c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false) {
     switch (type) {
         case WAVE:
             this->audioFile = loadWav(audioFIle, logger);
