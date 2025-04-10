@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2025 Nikita Serba. All rights reserved.
+ * Copyright (C) 2025 Nikita Serba. All rights reserved.
  *
  * This file is part of CFire 2D.
  *
