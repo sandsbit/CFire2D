@@ -26,7 +26,7 @@ c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, lo
             this->audioFile = loadWav(audioFIle, logger);
             break;
         default:
-            throw exceptions::unsupported_audio_format{};
+            BOOST_THROW_EXCEPTION(exceptions::unsupported_audio_format{});
     }
     this->position.x = 0;
     this->position.y = 0;

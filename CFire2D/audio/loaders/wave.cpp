@@ -110,7 +110,7 @@ static void processWaveLoadException(const std::string &message, c2d::logger_t &
     c2d::exceptions::invalid_audio_file_format exc{};
     BOOST_LOG_SEV(logger, c2d::ERROR) << message;
     exc << boost::error_info<struct tag_errmsg, std::string>{message};
-    throw exc;
+    BOOST_THROW_EXCEPTION(exc);
 }
 
 // https://indiegamedev.net/2020/02/15/the-complete-guide-to-openal-with-c-part-1-playing-a-sound/
