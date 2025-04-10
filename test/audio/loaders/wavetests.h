@@ -31,7 +31,8 @@ BOOST_AUTO_TEST_SUITE(WaveLoadingTest)
 
 
 BOOST_AUTO_TEST_CASE(WaveHeaderCheck) {
-    boost::log::sources::severity_logger<c2d::LoggingSeverity> logger{};
+    c2d::logger_t logger{};
+
     BOOST_LOG_SEV(logger, c2d::DEBUG) << "Starting wave loading unit test";
     c2d::audio::AudioFile audioFile = c2d::audio::loadWav("audio/alarm.wav", logger);
 

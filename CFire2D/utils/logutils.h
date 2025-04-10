@@ -18,7 +18,10 @@
 #ifndef LOGUTILS_H
 #define LOGUTILS_H
 
+#include <boost/log/sources/severity_logger.hpp>
+
 namespace c2d {
+
     enum LoggingSeverity {
         FATAL = 4,
         ERROR = 3,
@@ -26,6 +29,9 @@ namespace c2d {
         INFO = 1,
         DEBUG = 0
     };
+
+    typedef boost::log::sources::severity_logger<LoggingSeverity> logger_t;
+
 }
 
 #endif //LOGUTILS_H
