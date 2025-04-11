@@ -63,8 +63,14 @@ namespace c2d::audio {
             ALuint buffer;
             ALuint source;
         };
-        std::vector<BufferAndSource> buffersAndSources;
-        std::mutex buffersAndSourcesMutex;
+        std::vector<BufferAndSource> soundBuffersAndSources;
+        std::mutex soundBuffersAndSourcesMutex;
+        struct SeveralBuffersAndSource {
+            std::vector<ALuint> buffers;
+            ALuint source;
+        };
+        std::vector<SeveralBuffersAndSource> musicBuffersAndSources;
+        std::mutex musicBuffersAndSourcesMutex;
         std::thread clearingThread;
         std::atomic<bool> quit = false;
 
