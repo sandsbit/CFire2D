@@ -46,12 +46,18 @@ namespace c2d::audio {
         void stop(int id) noexcept(false) override;
         void setListenerPosition(double x, double y) noexcept(false) override;
 
+        void setNumberOfBuffers(std::size_t n) noexcept override;
+        void setSizeBufferSize(std::size_t size) noexcept override;
+
     private:
 
         boost::log::sources::severity_logger<LoggingSeverity> logger;
 
         ALCdevice *device;
         ALCcontext *context;
+
+        std::size_t numberOfBuffers = 4;
+        std::size_t bufferSize = 65536;  // 32 kb
 
         struct BufferAndSource {
             ALuint buffer;

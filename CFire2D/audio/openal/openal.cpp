@@ -146,6 +146,14 @@ namespace c2d::audio {
     void OpenALAudioSystem::setListenerPosition(double x, double y) noexcept(false) {
     }
 
+    void OpenALAudioSystem::setNumberOfBuffers(std::size_t n) noexcept {
+        this->numberOfBuffers = n;
+    }
+
+    void OpenALAudioSystem::setSizeBufferSize(std::size_t size) noexcept {
+        this->bufferSize = size;
+    }
+
     std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {
         BOOST_LOG_SEV(this->logger, ERROR) << message;
         exceptions::openal_error openalError{};

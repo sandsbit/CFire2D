@@ -39,6 +39,9 @@ namespace c2d::audio {
   virtual int playMusic(std::unique_ptr<Music> music) noexcept(false) = 0;
   virtual void stop(int id) noexcept(false) = 0;
 
+  virtual void setNumberOfBuffers(std::size_t n) noexcept = 0;
+  virtual void setSizeBufferSize(std::size_t size) noexcept = 0;
+
   virtual void setListenerPosition(double x, double y) noexcept(false) = 0;
   void setListenerPosition(Point point) noexcept(false) {
    setListenerPosition(point.x, point.y);
