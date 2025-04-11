@@ -91,27 +91,20 @@ namespace c2d::audio {
         checkAlcErrors(this->device);
     }
 
-    int OpenALAudioSystem::playSound(std::unique_ptr<Sound> sound) noexcept(false) {
-        ALuint buffer;
-        alGenBuffers(1, &buffer);
-        checkAlErrors();
-
-        ALenum format;
-        AudioFile audioFile = sound->getAudioFile();
+    std::optional<ALenum> getALFormatForAudiofile(const AudioFile &audioFile) {
         if (audioFile.channels == 1 && audioFile.bitsPerSample == 8)
-            format = AL_FORMAT_MONO8;
+            return std::make_optional(AL_FORMAT_MONO8);
         else if (audioFile.channels == 1 && audioFile.bitsPerSample == 16)
-            format = AL_FORMAT_MONO16;
+            return std::make_optional(AL_FORMAT_MONO16);
         else if (audioFile.channels == 2 && audioFile.bitsPerSample == 8)
-            format = AL_FORMAT_STEREO8;
+            return std::make_optional(AL_FORMAT_STEREO8);
         else if (audioFile.channels == 2 && audioFile.bitsPerSample == 16)
-            format = AL_FORMAT_STEREO16;
+            return std::make_optional(AL_FORMAT_STEREO16);
         else
-            logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
-                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+            return std::nullopt;
+    }
 
-        alBufferData(buffer, format, audioFile.data, audioFile.size, audioFile.sampleRate);
-
+    ALint OpenALAudioSystem::setupSource(const Point &location) noexcept(false) {
         ALuint source;
         alGenSources(1, &source);
         checkAlErrors();
@@ -119,13 +112,31 @@ namespace c2d::audio {
         checkAlErrors();
         alSourcef(source, AL_GAIN, 1.0f);
         checkAlErrors();
-        alSource3f(source, AL_POSITION, sound->getPositionX(), sound->getPositionY(), 0);
+        alSource3f(source, AL_POSITION, location.x, location.y, 0);
         checkAlErrors();
         alSource3f(source, AL_VELOCITY, 0, 0, 0);
         checkAlErrors();
         alSourcei(source, AL_LOOPING, AL_FALSE);
         checkAlErrors();
+        return source;
+    }
+
+    int OpenALAudioSystem::playSound(std::unique_ptr<Sound> sound) noexcept(false) {
+        ALuint buffer;
+        alGenBuffers(1, &buffer);
+        checkAlErrors();
+
+        auto audioFile = sound->getAudioFile();
+        std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
+        if (!format.has_value())
+            logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
+                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+
+        alBufferData(buffer, format.value(), audioFile.data, audioFile.size, audioFile.sampleRate);
+
+        ALuint source = setupSource(sound->getPosition());
         alSourcei(source, AL_BUFFER, buffer);
+        checkAlErrors();
 
         soundBuffersAndSourcesMutex.lock();
         soundBuffersAndSources.emplace_back(buffer, source);
@@ -138,6 +149,24 @@ namespace c2d::audio {
     }
 
     int OpenALAudioSystem::playMusic(std::unique_ptr<Music> music) noexcept(false) {
+        ALuint buffers[numberOfBuffers];
+        alGenBuffers(numberOfBuffers, buffers);
+        checkAlErrors();
+
+        for (std::size_t i = 0; i < numberOfBuffers; ++i) {
+            auto audioFile = music->getAudioFile();
+            std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
+            if (!format.has_value())
+                logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
+                    + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+            alBufferData(buffers[i], format.value(), &audioFile.data[i * bufferSize], bufferSize, audioFile.sampleRate);
+        }
+
+        ALuint source = setupSource({0, 0});
+
+        musicBuffersAndSourcesMutex.lock();
+        musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)), source);
+        musicBuffersAndSourcesMutex.unlock();
     }
 
     void OpenALAudioSystem::stop(int id) noexcept(false) {

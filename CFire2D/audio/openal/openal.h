@@ -74,6 +74,8 @@ namespace c2d::audio {
         std::thread clearingThread;
         std::atomic<bool> quit = false;
 
+        ALint setupSource(const Point &location) noexcept(false);
+
         std::optional<exceptions::openal_error> logMessageAndCreateError(std::string message);
 
         std::optional<exceptions::openal_error> checkAlErrors();

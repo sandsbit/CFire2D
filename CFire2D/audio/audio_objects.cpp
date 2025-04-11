@@ -56,3 +56,17 @@ double c2d::audio::Sound::getPositionY() const {
 const c2d::audio::AudioFile c2d::audio::Sound::getAudioFile() const noexcept {
     return this->audioFile;
 }
+
+c2d::audio::Music::Music(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false) {
+    switch (type) {
+        case WAVE:
+            this->audioFile = loadWav(audioFIle, logger);
+        break;
+        default:
+            BOOST_THROW_EXCEPTION(exceptions::unsupported_audio_format{});
+    }
+}
+
+const c2d::audio::AudioFile c2d::audio::Music::getAudioFile() const noexcept {
+    return this->audioFile;
+}

@@ -54,7 +54,13 @@ namespace c2d::audio {
 
  class Music {
  public:
-  Music(std::filesystem::path audioFIle, AudioFileType type) noexcept(false);
+  Music(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false);
+
+  [[nodiscard]] const AudioFile getAudioFile() const noexcept;
+
+ private:
+  AudioFile audioFile;
+
  };
 
 }
