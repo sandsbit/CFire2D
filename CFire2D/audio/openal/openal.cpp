@@ -107,7 +107,7 @@ namespace c2d::audio {
         else if (audioFile.channels == 2 && audioFile.bitsPerSample == 16)
             format = AL_FORMAT_STEREO16;
         else
-            logMessageAndCreateError("Invalid WAVE file parameters: channels: " + std::to_string(audioFile.channels)
+            logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
                 + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
 
         alBufferData(buffer, format, audioFile.data, audioFile.size, audioFile.sampleRate);
