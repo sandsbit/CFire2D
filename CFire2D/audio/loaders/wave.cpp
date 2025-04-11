@@ -21,6 +21,7 @@
 #include <fstream>
 #include <variant>
 #include <cstring>
+#include <iostream>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/common.hpp>
 #include <boost/exception/all.hpp>
@@ -32,6 +33,7 @@
 static std::variant<std::string, c2d::audio::AudioFile> loadWavFileHeader(std::ifstream &file) {
     char buffer[4];
     c2d::audio::AudioFile audioFile;
+
 
     // the RIFF
     if (!file.read(buffer, 4))
@@ -87,7 +89,15 @@ static std::variant<std::string, c2d::audio::AudioFile> loadWavFileHeader(std::i
 
     // data chunk header "data"
     if (!file.read(buffer, 4))
-        return "could not read data chunk header";
+        return "could not read data/list chunk header";
+    while (std::strncmp(buffer, "LIST", 4) == 0) {
+        if (!file.read(buffer, 4))
+            return "cannot read size of a LIST block";
+        const int size = c2d::memutils::convertMemoryToInt(buffer, 4);
+        file.seekg(size, std::ios_base::cur);
+        if (!file.read(buffer, 4))
+            return "could not read data/list chunk header";
+    }
     if (std::strncmp(buffer, "data", 4) != 0)
         return "file is not a valid WAVE file (doesn't have 'data' tag)";
 
