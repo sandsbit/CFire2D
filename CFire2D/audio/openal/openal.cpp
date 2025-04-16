@@ -71,7 +71,7 @@ namespace c2d::audio {
         std::vector<std::string> devicesVector;
         const char *ptr = devices;
         do {
-            devicesVector.push_back(std::string(ptr));
+            devicesVector.emplace_back(ptr);
             ptr += devicesVector.back().size() + 1;
         } while (*(ptr + 1) != '\0');
 
@@ -84,7 +84,7 @@ namespace c2d::audio {
             logMessageAndCreateError("Could not crete ALC device");
         checkAlcErrors(this->device);
 
-        if (device != "")
+        if (!device.empty())
             this->device = alcOpenDevice(device.c_str());
         else
             this->device = alcOpenDevice(nullptr);
@@ -157,8 +157,8 @@ namespace c2d::audio {
             auto audioFile = music->getAudioFile();
             std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
             if (!format.has_value())
-                logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
-                    + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+                BOOST_THROW_EXCEPTION(logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
+                    + ", bits per sample: " + std::to_string(audioFile.bitsPerSample)));
             alBufferData(buffers[i], format.value(), &audioFile.data[i * bufferSize], bufferSize, audioFile.sampleRate);
         }
 
@@ -167,6 +167,8 @@ namespace c2d::audio {
         musicBuffersAndSourcesMutex.lock();
         musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)), source);
         musicBuffersAndSourcesMutex.unlock();
+
+        return source;
     }
 
     void OpenALAudioSystem::stop(int id) noexcept(false) {
@@ -255,7 +257,7 @@ namespace c2d::audio {
                         --i;
                     }
                 }
-            } catch (std::exception _) {}
+            } catch (std::exception &_) {}
             soundBuffersAndSourcesMutex.unlock();
             musicBuffersAndSourcesMutex.lock();
             try {
@@ -270,7 +272,7 @@ namespace c2d::audio {
                         --i;
                     }
                 }
-            } catch (std::exception _) {}
+            } catch (std::exception &_) {}
             musicBuffersAndSourcesMutex.unlock();
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
