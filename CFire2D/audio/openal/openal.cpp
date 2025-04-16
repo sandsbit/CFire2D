@@ -168,6 +168,9 @@ namespace c2d::audio {
         musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)), source);
         musicBuffersAndSourcesMutex.unlock();
 
+        alSourceQueueBuffers(source, numberOfBuffers, &buffers[0]);
+        alSourcePlay(source);
+
         return source;
     }
 
