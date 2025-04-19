@@ -31,16 +31,16 @@ namespace c2d::audio {
         this->logger = logger;
         this->device = alcOpenDevice(nullptr);
         if (this->device == nullptr)
-            logMessageAndCreateError("Could not crete ALC device");
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Could not crete ALC device"));
         this->checkAlcErrors(this->device);
 
         this->context = alcCreateContext(this->device, nullptr);
         this->checkAlcErrors(this->device);
         if (this->context == nullptr)
-            logMessageAndCreateError("Could not crete ALC context");
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Could not crete ALC context"));
 
         if (!alcMakeContextCurrent(this->context))
-            logMessageAndCreateError("Could not make ALC context current");
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Could not make ALC context current"));
         this->checkAlcErrors(this->device);
 
         std::thread clearingThread([this]() {
@@ -81,7 +81,7 @@ namespace c2d::audio {
     void OpenALAudioSystem::setDevice(const std::string &device) noexcept(false) {
         alcCloseDevice(this->device);
         if (this->device == nullptr)
-            logMessageAndCreateError("Could not crete ALC device");
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Could not crete ALC device"));
         checkAlcErrors(this->device);
 
         if (!device.empty())
@@ -129,8 +129,8 @@ namespace c2d::audio {
         auto audioFile = sound->getAudioFile();
         std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
         if (!format.has_value())
-            logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
-                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample));
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
+                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample)));
 
         alBufferData(buffer, format.value(), audioFile.data, audioFile.size, audioFile.sampleRate);
 
