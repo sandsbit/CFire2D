@@ -52,7 +52,7 @@ namespace c2d::audio {
 
     OpenALAudioSystem::~OpenALAudioSystem() {
         quit = true;
-
+        clearingThread.join();
         alcCloseDevice(this->device);
         alcMakeContextCurrent(nullptr);
         alcDestroyContext(this->context);
@@ -63,7 +63,6 @@ namespace c2d::audio {
             exit(1);
         }
 
-        clearingThread.join();
     }
 
     std::vector<std::string> OpenALAudioSystem::listDevices() const {
