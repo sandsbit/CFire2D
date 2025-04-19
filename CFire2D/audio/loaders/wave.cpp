@@ -137,7 +137,7 @@ c2d::audio::AudioFile c2d::audio::loadWav(std::filesystem::path file, logger_t &
         fileStream.read(audioFile.data, audioFile.size);
         fileStream.close();
         return audioFile;
-    } catch (const std::bad_variant_access &e) {
+    } catch ([[maybe_unused]] const std::bad_variant_access &e) {
         processWaveLoadException(std::get<std::string>(audioFileOrErrorMsg), logger);
     }
 }
