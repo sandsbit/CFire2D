@@ -253,7 +253,7 @@ namespace c2d::audio {
     void OpenALAudioSystem::cleanUpSoundBuffers() {
         soundBuffersAndSourcesMutex.lock();
         try {
-            for (auto i = soundBuffersAndSources.begin(); i != soundBuffersAndSources.end(); ++i) {
+            for (auto i = soundBuffersAndSources.begin(); i != soundBuffersAndSources.end();) {
                 ALint state;
                 alGetSourcei(i->source, AL_SOURCE_STATE, &state);
                 if (state != AL_PLAYING and state != AL_PAUSED) {
@@ -261,7 +261,8 @@ namespace c2d::audio {
                     alDeleteSources(1, &i->source);
                     checkAlErrors();
                     soundBuffersAndSources.erase(i);
-                    --i;
+                } else {
+                    ++i;
                 }
             }
         } catch (std::exception &_) {}
