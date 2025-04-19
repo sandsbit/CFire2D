@@ -50,6 +50,12 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU General Public License
 and GNU Lesser General Public License along with CFire 2D. If not,
 see <https://www.gnu.org/licenses/>.
+
+**COPYRIGHT FOR SOME FILES**:<br>
+- slowlife.wav<br>
+Music by: https://www.bensound.com<br>
+Artist: Benjamin Lazzarus<br>
+License code: HD6MJM3UIKN793KF
 ## Links
 * [Project releases](https://github.com/sandsbit/CFire2D/releases)
 * [Latest stable source code](https://github.com/sandsbit/CFire2D/tree/master)
