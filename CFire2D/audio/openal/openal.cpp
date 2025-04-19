@@ -308,25 +308,21 @@ namespace c2d::audio {
                     ALuint buffer;
                     alSourceUnqueueBuffers(musicInfo.source, 1, &buffer);
 
-                    ALsizei dataSize = bufferSize;
-
-                    auto data = static_cast<char *>(malloc(dataSize));
-                    std::memset(data, 0, dataSize);
+                    auto data = static_cast<char *>(malloc(bufferSize));
+                    std::memset(data, 0, bufferSize);
 
                     std::size_t dataSizeToCopy = std::min(bufferSize, musicInfo.size - musicInfo.cursor);
 
                     std::memcpy(data, &musicInfo.data[musicInfo.cursor], dataSizeToCopy);
                     musicInfo.cursor += dataSizeToCopy;
 
-                    if (dataSizeToCopy < bufferSize) {
-                        musicInfo.cursor = 0;
-                        std::memcpy(&data[dataSizeToCopy], &musicInfo.data[musicInfo.cursor], bufferSize - dataSizeToCopy);
-                        musicInfo.cursor = bufferSize - dataSizeToCopy;
-                    }
-
                     alBufferData(buffer, musicInfo.format, data, bufferSize, musicInfo.sampleRate);
                     alSourceQueueBuffers(musicInfo.source, 1, &buffer);
                     free(data);
+
+                    if (dataSizeToCopy < bufferSize) {
+                        break;
+                    }
                 }
             }
         }

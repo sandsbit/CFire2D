@@ -37,6 +37,7 @@ namespace c2d::audio {
  class Sound {
   public:
   Sound(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false);
+  Sound(AudioFile audioFile) noexcept;
   ~Sound();
 
   void setPosition(double x, double y);

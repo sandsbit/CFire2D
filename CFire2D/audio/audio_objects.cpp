@@ -32,6 +32,12 @@ c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, lo
     this->position.y = 0;
 }
 
+c2d::audio::Sound::Sound(AudioFile audioFile) noexcept {
+    this->position.x = 0;
+    this->position.y = 0;
+    this->audioFile = audioFile;
+}
+
 c2d::audio::Sound::~Sound() {
     free(audioFile.data);
 }
