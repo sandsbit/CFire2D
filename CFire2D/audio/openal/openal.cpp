@@ -144,6 +144,11 @@ namespace c2d::audio {
     }
 
     int OpenALAudioSystem::playMusic(std::shared_ptr<Music> music) noexcept(false) {
+        if (music->getAudioFile().size < numberOfBuffers * bufferSize) {
+            auto sound = std::make_shared<Sound>(music->getAudioFile());
+            return playSound(sound);
+        }
+
         ALuint buffers[numberOfBuffers];
         alGenBuffers(numberOfBuffers, buffers);
         checkAlErrors();
