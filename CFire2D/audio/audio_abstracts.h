@@ -32,7 +32,7 @@ namespace c2d::audio {
  public:
   virtual ~AudioSystem() = default;
 
-  virtual std::vector<std::string> listDevices() = 0;
+  [[nodiscard]] virtual std::vector<std::string> listDevices() const = 0;
   virtual void setDevice(const std::string &device) noexcept(false) = 0;
 
   virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false) = 0;

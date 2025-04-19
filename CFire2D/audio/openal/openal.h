@@ -22,7 +22,6 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <boost/log/sources/severity_logger.hpp>
 #include <alc.h>
 
 #include "audio/audio_abstracts.h"
@@ -37,7 +36,7 @@ namespace c2d::audio {
         explicit OpenALAudioSystem(logger_t &logger);
         ~OpenALAudioSystem() override;
 
-        std::vector<std::string> listDevices() override;
+        [[nodiscard]] std::vector<std::string> listDevices() const override;
         void setDevice(const std::string &device) noexcept(false) override;
 
         int playSound(std::unique_ptr<Sound> sound) noexcept(false) override;
@@ -51,7 +50,7 @@ namespace c2d::audio {
 
     private:
 
-        boost::log::sources::severity_logger<LoggingSeverity> logger;
+        logger_t logger;
 
         ALCdevice *device;
         ALCcontext *context;
@@ -76,12 +75,16 @@ namespace c2d::audio {
 
         ALint setupSource(const Point &location) noexcept(false);
 
-        std::optional<exceptions::openal_error> logMessageAndCreateError(std::string message);
+        [[nodiscard]] exceptions::openal_error logMessageAndCreateError(std::string message);
 
-        std::optional<exceptions::openal_error> checkAlErrors();
-        std::optional<exceptions::openal_error> checkAlcErrors(ALCdevice *device);
+        [[nodiscard]] std::optional<exceptions::openal_error> checkAlErrors();
+        [[nodiscard]] std::optional<exceptions::openal_error> checkAlcErrors(ALCdevice *device);
 
-        void cleanOpenALBuffersAndSourcesLoopIgnoreExceptions();
+        void cleanUpSoundBuffers();
+        void cleanUpMusicBuffers();
+        void updateMusicBuffers();
+
+        void cleanupAndBuffersUpdate();
     };
 }
 

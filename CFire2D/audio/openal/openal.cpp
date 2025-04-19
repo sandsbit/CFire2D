@@ -44,7 +44,7 @@ namespace c2d::audio {
         this->checkAlcErrors(this->device);
 
         std::thread clearingThread([this]() {
-           this->cleanOpenALBuffersAndSourcesLoopIgnoreExceptions();
+           this->cleanupAndBuffersUpdate();
         });
     }
 
@@ -64,7 +64,7 @@ namespace c2d::audio {
         clearingThread.join();
     }
 
-    std::vector<std::string> OpenALAudioSystem::listDevices() {
+    std::vector<std::string> OpenALAudioSystem::listDevices() const {
         const ALCchar *devices = alcGetString(this->device, ALC_DEVICE_SPECIFIER);
         checkAlcErrors(this->device);
 
@@ -188,11 +188,11 @@ namespace c2d::audio {
         this->bufferSize = size;
     }
 
-    std::optional<exceptions::openal_error> OpenALAudioSystem::logMessageAndCreateError(std::string message) {
+    exceptions::openal_error OpenALAudioSystem::logMessageAndCreateError(std::string message) {
         BOOST_LOG_SEV(this->logger, ERROR) << message;
         exceptions::openal_error openalError{};
         openalError << boost::error_info<struct tag_errmsg, std::string>{message};
-        return std::make_optional(openalError);
+        return openalError;
     }
 
     inline const char * getAlErrorDescription(ALenum error) {
@@ -243,41 +243,49 @@ namespace c2d::audio {
         return logMessageAndCreateError(getAlcErrorDescription(error));
     }
 
-    void OpenALAudioSystem::cleanOpenALBuffersAndSourcesLoopIgnoreExceptions() {
+    void OpenALAudioSystem::cleanUpSoundBuffers() {
+        soundBuffersAndSourcesMutex.lock();
+        try {
+            for (auto i = soundBuffersAndSources.begin(); i != soundBuffersAndSources.end(); ++i) {
+                ALint state;
+                alGetSourcei(i->source, AL_SOURCE_STATE, &state);
+                if (state != AL_PLAYING and state != AL_PAUSED) {
+                    alDeleteBuffers(1, &i->buffer);
+                    alDeleteSources(1, &i->source);
+                    checkAlErrors();
+                    soundBuffersAndSources.erase(i);
+                    --i;
+                }
+            }
+        } catch (std::exception &_) {}
+        soundBuffersAndSourcesMutex.unlock();
+    }
+
+    void OpenALAudioSystem::cleanUpMusicBuffers() {
+        musicBuffersAndSourcesMutex.lock();
+        try {
+            for (auto i = musicBuffersAndSources.begin(); i != musicBuffersAndSources.end(); ++i) {
+                ALint state;
+                alGetSourcei(i->source, AL_SOURCE_STATE, &state);
+                if (state != AL_PLAYING and state != AL_PAUSED) {
+                    alDeleteBuffers(i->buffers.size(), &i->buffers[0]);
+                    alDeleteSources(1, &i->source);
+                    checkAlErrors();
+                    musicBuffersAndSources.erase(i);
+                    --i;
+                }
+            }
+        } catch (std::exception &_) {}
+        musicBuffersAndSourcesMutex.unlock();
+    }
+
+    void OpenALAudioSystem::cleanupAndBuffersUpdate() {
         while (true) {
             if (quit)
                 break;
-            soundBuffersAndSourcesMutex.lock();
-            try {
-                for (auto i = soundBuffersAndSources.begin(); i != soundBuffersAndSources.end(); ++i) {
-                    ALint state;
-                    alGetSourcei(i->source, AL_SOURCE_STATE, &state);
-                    if (state != AL_PLAYING and state != AL_PAUSED) {
-                        alDeleteBuffers(1, &i->buffer);
-                        alDeleteSources(1, &i->source);
-                        checkAlErrors();
-                        soundBuffersAndSources.erase(i);
-                        --i;
-                    }
-                }
-            } catch (std::exception &_) {}
-            soundBuffersAndSourcesMutex.unlock();
-            musicBuffersAndSourcesMutex.lock();
-            try {
-                for (auto i = musicBuffersAndSources.begin(); i != musicBuffersAndSources.end(); ++i) {
-                    ALint state;
-                    alGetSourcei(i->source, AL_SOURCE_STATE, &state);
-                    if (state != AL_PLAYING and state != AL_PAUSED) {
-                        alDeleteBuffers(i->buffers.size(), &i->buffers[0]);
-                        alDeleteSources(1, &i->source);
-                        checkAlErrors();
-                        musicBuffersAndSources.erase(i);
-                        --i;
-                    }
-                }
-            } catch (std::exception &_) {}
-            musicBuffersAndSourcesMutex.unlock();
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            cleanUpSoundBuffers();
+            cleanUpMusicBuffers();
+            updateMusicBuffers();
         }
     }
 }
