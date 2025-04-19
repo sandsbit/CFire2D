@@ -21,10 +21,8 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <boost/log/sources/severity_logger.hpp>
 
 #include "utils/2dutils.h"
-#include "utils/logutils.h"
 #include "audio_objects.h"
 
 namespace c2d::audio {
