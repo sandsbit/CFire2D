@@ -53,16 +53,9 @@ namespace c2d::audio {
     OpenALAudioSystem::~OpenALAudioSystem() {
         quit = true;
         clearingThread.join();
-        alcCloseDevice(this->device);
         alcMakeContextCurrent(nullptr);
         alcDestroyContext(this->context);
-        try {
-            checkAlcErrors(this->device);
-        } catch (std::exception &e) {
-            BOOST_LOG_SEV(this->logger, FATAL) << "Exception while closing OpenAL device: " << e.what();
-            exit(1);
-        }
-
+        alcCloseDevice(this->device);
     }
 
     std::vector<std::string> OpenALAudioSystem::listDevices() const {
