@@ -135,6 +135,7 @@ namespace c2d::audio {
                 + ", bits per sample: " + std::to_string(audioFile.bitsPerSample)));
 
         alBufferData(buffer, format.value(), audioFile.data, audioFile.size, audioFile.sampleRate);
+        checkAlErrors();
 
         ALuint source = setupSource(sound->getPosition());
         alSourcei(source, AL_BUFFER, buffer);
