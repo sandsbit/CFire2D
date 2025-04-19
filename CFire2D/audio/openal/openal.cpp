@@ -247,7 +247,7 @@ namespace c2d::audio {
 
     void OpenALAudioSystem::checkAlcErrors(ALCdevice *device) const noexcept(false) {
         ALenum error = alcGetError(device);
-        if (error == ALC_NO_ERROR)
+        if (error != ALC_NO_ERROR)
             BOOST_THROW_EXCEPTION(logMessageAndCreateError(getAlcErrorDescription(error)));
     }
 
