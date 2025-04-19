@@ -18,6 +18,8 @@
 #include <optional>
 #include <string>
 #include <thread>
+#include <cstdio>
+#include <memory>
 #include <al.h>
 #include <alc.h>
 #include <boost/log/common.hpp>
@@ -153,19 +155,21 @@ namespace c2d::audio {
         alGenBuffers(numberOfBuffers, buffers);
         checkAlErrors();
 
-        for (std::size_t i = 0; i < numberOfBuffers; ++i) {
-            auto audioFile = music->getAudioFile();
-            std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
-            if (!format.has_value())
-                BOOST_THROW_EXCEPTION(logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
-                    + ", bits per sample: " + std::to_string(audioFile.bitsPerSample)));
+        auto audioFile = music->getAudioFile();
+        std::optional<ALenum> format = getALFormatForAudiofile(audioFile);
+        if (!format.has_value())
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError("Invalid file parameters: channels: " + std::to_string(audioFile.channels)
+                + ", bits per sample: " + std::to_string(audioFile.bitsPerSample)));
+
+        for (std::size_t i = 0; i < numberOfBuffers; ++i)
             alBufferData(buffers[i], format.value(), &audioFile.data[i * bufferSize], bufferSize, audioFile.sampleRate);
-        }
 
         ALuint source = setupSource({0, 0});
 
         musicBuffersAndSourcesMutex.lock();
-        musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)), source);
+        musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)),
+            source, format.value(), audioFile.sampleRate, audioFile.data, bufferSize * numberOfBuffers,
+            audioFile.size);
         musicBuffersAndSourcesMutex.unlock();
 
         alSourceQueueBuffers(source, numberOfBuffers, &buffers[0]);
@@ -274,6 +278,47 @@ namespace c2d::audio {
                 }
             }
         } catch (std::exception &_) {}
+        musicBuffersAndSourcesMutex.unlock();
+    }
+
+    void OpenALAudioSystem::updateMusicBuffers() {
+        musicBuffersAndSourcesMutex.lock();
+        for (auto &musicInfo : musicBuffersAndSources) {
+            ALint state;
+            alGetSourcei(musicInfo.source, AL_SOURCE_STATE, &state);
+            if (state == AL_PLAYING) {
+                ALint buffersProcessed = 0;
+                alGetSourcei(musicInfo.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+
+                if (buffersProcessed <= 0)
+                    continue;
+
+                while (buffersProcessed--) {
+                    ALuint buffer;
+                    alSourceUnqueueBuffers(musicInfo.source, 1, &buffer);
+
+                    ALsizei dataSize = bufferSize;
+
+                    auto data = static_cast<char *>(malloc(dataSize));
+                    std::memset(data, 0, dataSize);
+
+                    std::size_t dataSizeToCopy = std::min(bufferSize, musicInfo.size - musicInfo.cursor);
+
+                    std::memcpy(data, &musicInfo.data[musicInfo.cursor], dataSizeToCopy);
+                    musicInfo.cursor += dataSizeToCopy;
+
+                    if (dataSizeToCopy < bufferSize) {
+                        musicInfo.cursor = 0;
+                        std::memcpy(&data[dataSizeToCopy], &musicInfo.data[musicInfo.cursor], bufferSize - dataSizeToCopy);
+                        musicInfo.cursor = bufferSize - dataSizeToCopy;
+                    }
+
+                    alBufferData(buffer, musicInfo.format, data, bufferSize, musicInfo.sampleRate);
+                    alSourceQueueBuffers(musicInfo.source, 1, &buffer);
+                    free(data);
+                }
+            }
+        }
         musicBuffersAndSourcesMutex.unlock();
     }
 
