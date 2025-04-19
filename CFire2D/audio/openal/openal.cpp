@@ -257,8 +257,8 @@ namespace c2d::audio {
                 ALint state;
                 alGetSourcei(i->source, AL_SOURCE_STATE, &state);
                 if (state != AL_PLAYING and state != AL_PAUSED) {
-                    alDeleteBuffers(1, &i->buffer);
                     alDeleteSources(1, &i->source);
+                    alDeleteBuffers(1, &i->buffer);
                     checkAlErrors();
                     soundBuffersAndSources.erase(i);
                 } else {
@@ -276,8 +276,8 @@ namespace c2d::audio {
                 ALint state;
                 alGetSourcei(i->source, AL_SOURCE_STATE, &state);
                 if (state != AL_PLAYING and state != AL_PAUSED) {
-                    alDeleteBuffers(i->buffers.size(), &i->buffers[0]);
                     alDeleteSources(1, &i->source);
+                    alDeleteBuffers(i->buffers.size(), &i->buffers[0]);
                     checkAlErrors();
                     musicBuffersAndSources.erase(i);
                     --i;
