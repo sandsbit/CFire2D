@@ -45,7 +45,7 @@ namespace c2d::audio {
             BOOST_THROW_EXCEPTION(logMessageAndCreateError("Could not make ALC context current"));
         this->checkAlcErrors(this->device);
 
-        std::thread clearingThread([this]() {
+        clearingThread = std::thread([this]() {
            this->cleanupAndBuffersUpdate();
         });
     }
