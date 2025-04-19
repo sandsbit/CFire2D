@@ -143,6 +143,7 @@ namespace c2d::audio {
 
         soundBuffersAndSourcesMutex.lock();
         soundBuffersAndSources.emplace_back(buffer, source);
+        soundBuffersAndSources.push_back({buffer, source});
         soundBuffersAndSourcesMutex.unlock();
 
         alSourcePlay(source);
@@ -167,10 +168,19 @@ namespace c2d::audio {
 
         ALuint source = setupSource({0, 0});
 
+        MusicBuffersAndSource musicInfo;
+        musicInfo.buffers = std::move(std::vector(buffers, buffers + numberOfBuffers));
+        musicInfo.source = source;
+        musicInfo.format = format.value();
+        musicInfo.sampleRate = audioFile.sampleRate;
+        musicInfo.data = audioFile.data;
+        musicInfo.cursor = bufferSize * numberOfBuffers;
+        musicInfo.size = audioFile.size;
         musicBuffersAndSourcesMutex.lock();
         musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)),
             source, format.value(), audioFile.sampleRate, audioFile.data, bufferSize * numberOfBuffers,
             audioFile.size);
+        musicBuffersAndSources.push_back(musicInfo);
         musicBuffersAndSourcesMutex.unlock();
 
         alSourceQueueBuffers(source, numberOfBuffers, &buffers[0]);
