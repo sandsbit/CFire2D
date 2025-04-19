@@ -32,6 +32,10 @@ c2d::audio::Sound::Sound(std::filesystem::path audioFIle, AudioFileType type, lo
     this->position.y = 0;
 }
 
+c2d::audio::Sound::~Sound() {
+    free(audioFile.data);
+}
+
 void c2d::audio::Sound::setPosition(double x, double y) {
     this->position.x = x;
     this->position.y = y;
@@ -65,6 +69,10 @@ c2d::audio::Music::Music(std::filesystem::path audioFIle, AudioFileType type, lo
         default:
             BOOST_THROW_EXCEPTION(exceptions::unsupported_audio_format{});
     }
+}
+
+c2d::audio::Music::~Music() {
+    free(audioFile.data);
 }
 
 const c2d::audio::AudioFile c2d::audio::Music::getAudioFile() const noexcept {

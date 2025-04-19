@@ -37,6 +37,7 @@ namespace c2d::audio {
  class Sound {
   public:
   Sound(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false);
+  ~Sound();
 
   void setPosition(double x, double y);
   void setPosition(Point point);
@@ -55,6 +56,7 @@ namespace c2d::audio {
  class Music {
  public:
   Music(std::filesystem::path audioFIle, AudioFileType type, logger_t &logger) noexcept(false);
+  ~Music();
 
   [[nodiscard]] const AudioFile getAudioFile() const noexcept;
 
