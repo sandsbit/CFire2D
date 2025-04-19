@@ -39,8 +39,8 @@ namespace c2d::audio {
         [[nodiscard]] std::vector<std::string> listDevices() const override;
         void setDevice(const std::string &device) noexcept(false) override;
 
-        int playSound(std::unique_ptr<Sound> sound) noexcept(false) override;
-        int playMusic(std::unique_ptr<Music> music) noexcept(false) override;
+        int playSound(std::shared_ptr<Sound> sound) noexcept(false) override;
+        int playMusic(std::shared_ptr<Music> music) noexcept(false) override;
 
         void stop(int id) noexcept(false) override;
         void setListenerPosition(double x, double y) noexcept(false) override;

@@ -35,8 +35,8 @@ namespace c2d::audio {
   [[nodiscard]] virtual std::vector<std::string> listDevices() const = 0;
   virtual void setDevice(const std::string &device) noexcept(false) = 0;
 
-  virtual int playSound(std::unique_ptr<Sound> sound) noexcept(false) = 0;
-  virtual int playMusic(std::unique_ptr<Music> music) noexcept(false) = 0;
+  virtual int playSound(std::shared_ptr<Sound> sound) noexcept(false) = 0;
+  virtual int playMusic(std::shared_ptr<Music> music) noexcept(false) = 0;
   virtual void stop(int id) noexcept(false) = 0;
 
   virtual void setNumberOfBuffers(std::size_t n) noexcept = 0;

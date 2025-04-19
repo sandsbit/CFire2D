@@ -123,7 +123,7 @@ namespace c2d::audio {
         return source;
     }
 
-    int OpenALAudioSystem::playSound(std::unique_ptr<Sound> sound) noexcept(false) {
+    int OpenALAudioSystem::playSound(std::shared_ptr<Sound> sound) noexcept(false) {
         ALuint buffer;
         alGenBuffers(1, &buffer);
         checkAlErrors();
@@ -150,7 +150,7 @@ namespace c2d::audio {
         return source;
     }
 
-    int OpenALAudioSystem::playMusic(std::unique_ptr<Music> music) noexcept(false) {
+    int OpenALAudioSystem::playMusic(std::shared_ptr<Music> music) noexcept(false) {
         ALuint buffers[numberOfBuffers];
         alGenBuffers(numberOfBuffers, buffers);
         checkAlErrors();
