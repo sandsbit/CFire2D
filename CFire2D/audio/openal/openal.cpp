@@ -177,6 +177,18 @@ namespace c2d::audio {
     }
 
     void OpenALAudioSystem::stop(int id) noexcept(false) {
+        alSourceStop(id);
+        checkAlErrors();
+    }
+
+    void OpenALAudioSystem::pause(int id) noexcept(false) {
+        alSourcePause(id);
+        checkAlErrors();
+    }
+
+    void OpenALAudioSystem::resume(int id) noexcept(false) {
+        alSourcePlay(id);
+        checkAlErrors();
     }
 
     void OpenALAudioSystem::setListenerPosition(double x, double y) noexcept(false) {

@@ -36,6 +36,8 @@ namespace c2d::audio {
   virtual int playSound(std::shared_ptr<Sound> sound) noexcept(false) = 0;
   virtual int playMusic(std::shared_ptr<Music> music) noexcept(false) = 0;
   virtual void stop(int id) noexcept(false) = 0;
+  virtual void pause(int id) noexcept(false) = 0;
+  virtual void resume(int id) noexcept(false) = 0;
 
   virtual void setNumberOfBuffers(std::size_t n) noexcept = 0;
   virtual void setSizeBufferSize(std::size_t size) noexcept = 0;

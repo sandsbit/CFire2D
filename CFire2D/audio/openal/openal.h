@@ -43,6 +43,8 @@ namespace c2d::audio {
         int playMusic(std::shared_ptr<Music> music) noexcept(false) override;
 
         void stop(int id) noexcept(false) override;
+        void pause(int id) noexcept(false) override;
+        void resume(int id) noexcept(false) override;
         void setListenerPosition(double x, double y) noexcept(false) override;
 
         void setNumberOfBuffers(std::size_t n) noexcept override;
