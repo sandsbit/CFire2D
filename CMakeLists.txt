@@ -30,3 +30,6 @@ add_executable(CFire2DTests test/testmain.cpp
 )
 target_link_libraries(CFire2DTests LINK_PUBLIC ${Boost_LIBRARIES} ${OPENAL_LIBRARY} CFire2DAudio)
 target_include_directories(CFire2DTests PRIVATE ./test/)
+
+add_executable(CFireSampleSound samples/audio/sound_main.cpp)
+target_link_libraries(CFireSampleSound LINK_PUBLIC ${Boost_LIBRARIES} ${OPENAL_LIBRARY} CFire2DAudio)
