@@ -50,7 +50,7 @@ namespace c2d::audio {
 
     private:
 
-        logger_t logger;
+        mutable logger_t logger;
 
         ALCdevice *device;
         ALCcontext *context;
@@ -75,10 +75,10 @@ namespace c2d::audio {
 
         ALint setupSource(const Point &location) noexcept(false);
 
-        [[nodiscard]] exceptions::openal_error logMessageAndCreateError(std::string message);
+        [[nodiscard]] exceptions::openal_error logMessageAndCreateError(std::string message) const noexcept(false);
 
-        [[nodiscard]] std::optional<exceptions::openal_error> checkAlErrors();
-        [[nodiscard]] std::optional<exceptions::openal_error> checkAlcErrors(ALCdevice *device);
+        void checkAlErrors() const noexcept(false);
+        void checkAlcErrors(ALCdevice *device) const noexcept(false);
 
         void cleanUpSoundBuffers();
         void cleanUpMusicBuffers();

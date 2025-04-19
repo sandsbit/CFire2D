@@ -188,7 +188,7 @@ namespace c2d::audio {
         this->bufferSize = size;
     }
 
-    exceptions::openal_error OpenALAudioSystem::logMessageAndCreateError(std::string message) {
+    exceptions::openal_error OpenALAudioSystem::logMessageAndCreateError(std::string message) const noexcept(false) {
         BOOST_LOG_SEV(this->logger, ERROR) << message;
         exceptions::openal_error openalError{};
         openalError << boost::error_info<struct tag_errmsg, std::string>{message};
@@ -212,11 +212,10 @@ namespace c2d::audio {
         }
     }
 
-    std::optional<exceptions::openal_error> OpenALAudioSystem::checkAlErrors() {
+    void OpenALAudioSystem::checkAlErrors() const noexcept(false) {
         ALenum error = alGetError();
-        if (error == AL_NO_ERROR)
-            return std::nullopt;
-        return logMessageAndCreateError(getAlErrorDescription(error));
+        if (error != AL_NO_ERROR)
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError(getAlErrorDescription(error)));
     }
 
     inline const char * getAlcErrorDescription(ALCenum error) {
@@ -236,11 +235,10 @@ namespace c2d::audio {
         }
     }
 
-    std::optional<exceptions::openal_error> OpenALAudioSystem::checkAlcErrors(ALCdevice *device) {
+    void OpenALAudioSystem::checkAlcErrors(ALCdevice *device) const noexcept(false) {
         ALenum error = alcGetError(device);
         if (error == ALC_NO_ERROR)
-            return std::nullopt;
-        return logMessageAndCreateError(getAlcErrorDescription(error));
+            BOOST_THROW_EXCEPTION(logMessageAndCreateError(getAlcErrorDescription(error)));
     }
 
     void OpenALAudioSystem::cleanUpSoundBuffers() {
