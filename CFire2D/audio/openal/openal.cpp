@@ -142,11 +142,10 @@ namespace c2d::audio {
         checkAlErrors();
 
         soundBuffersAndSourcesMutex.lock();
-        soundBuffersAndSources.emplace_back(buffer, source);
         soundBuffersAndSources.push_back({buffer, source});
+        alSourcePlay(source);
         soundBuffersAndSourcesMutex.unlock();
 
-        alSourcePlay(source);
         checkAlErrors();
 
         return source;
@@ -177,14 +176,10 @@ namespace c2d::audio {
         musicInfo.cursor = bufferSize * numberOfBuffers;
         musicInfo.size = audioFile.size;
         musicBuffersAndSourcesMutex.lock();
-        musicBuffersAndSources.emplace_back(std::move(std::vector(buffers, buffers + numberOfBuffers)),
-            source, format.value(), audioFile.sampleRate, audioFile.data, bufferSize * numberOfBuffers,
-            audioFile.size);
         musicBuffersAndSources.push_back(musicInfo);
-        musicBuffersAndSourcesMutex.unlock();
-
         alSourceQueueBuffers(source, numberOfBuffers, &buffers[0]);
         alSourcePlay(source);
+        musicBuffersAndSourcesMutex.unlock();
 
         return source;
     }
