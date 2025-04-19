@@ -18,10 +18,10 @@
 #ifndef CFIRE2D_LIBRARY_H
 #define CFIRE2D_LIBRARY_H
 
-#include <optional>
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <al.h>
 #include <alc.h>
 
 #include "audio/audio_abstracts.h"
